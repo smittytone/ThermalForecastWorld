@@ -1,0 +1,6 @@
+[submodule "submodules/generic-squirrel"]
+	path = submodules/generic-squirrel
+	url = https://github.com/smittytone/generic-squirrel
+[submodule "submodules/Location"]
+	path = submodules/Location
+	url = https://github.com/smittytone/Location

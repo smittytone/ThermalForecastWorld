@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+# @version 1.0.3
+
+src=$HOME/OneDrive/Programming/ThermalForecastWorld
+branch=$(git branch --show-current)
+
+# On the develop branch? Include debug code
+extra="-DBUILD_TYPE release"
+if [[ $branch != "master" ]]; then
+    extra="-DBUILD_TYPE debug"
+fi
+
+# Build the source files
+pleasebuild ${=extra} --lib scripts/library.js --use-directives $src/directives.json \
+    ThermalForecastWorld.agent.nut > compiled.agent.nut || exit 1
+pleasebuild ${=extra} --lib scripts/library.js \
+    ThermalForecastWorld.device.nut > compiled.device.nut || exit 1
+
+# Upload the code
+impt build run

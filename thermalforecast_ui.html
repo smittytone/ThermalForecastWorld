@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang='en-US'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css'>
+    <link href='https://fonts.googleapis.com/css?family=Abel|Oswald' rel='stylesheet'>
+    <link rel='apple-touch-icon' href='https://smittytone.github.io/images/ati-thermal.png'>
+    <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-thermal.ico'>
+    <title>Thermal Forecast World</title>
+    <style>
+        .center {margin-left: auto; margin-right: auto; margin-bottom: auto; margin-top: auto;}
+        .slider {-webkit-appearance: none; width: 100%%; height: 25px; background: #2851A3; outline: none;}
+        .slider::-webkit-slider-thumb {-webkit-appearance: none; appearance: none; width: 25px; height: 25px;
+                                       border-radius: 50%%; background: white; cursor: pointer;}
+        .slider::-moz-range-thumb {width: 25px; height: 25px; border-radius: 50%%; background: white; cursor: pointer;}
+        body {background-color: #2e5cb8;}
+        p {color: white; font-family: Abel, sans-serif;}
+        p.colophon {font-family: Oswald, sans-serif;}
+        p.header {font-size: 22px;}
+        p.subheader {font-size: 20px;}
+        p.controls {font-size: 18px;}
+        h2 {color: white; font-family: Abel, sans-serif; font-weight:bold;}
+        h4 {color: white; font-family: Abel, sans-serif;}
+        td {color: white; font-family: Abel, sans-serif;}
+        hr {border-color: white;}
+        .container {padding: 20px;}
+        .uicontent {border: 2px solid white;}
+        .btn-dark {width: 200px;}
+        .advancedsettings {background-color:#2851A3; width: 400px;}
+
+        @media only screen and (max-width: 700px) {
+            .container {padding: 0px; width: 100%%; margin: 0%%;}
+            .uicontent {border: 0px; width: 100%%; margin: 0%%;}
+            .btn-dark {width: 160px;}
+            .col-2 {max-width: 0%%; flex: 0 0 0%%;}
+            .col-8 {max-width: 100%%; flex: 0 0 100%%;}
+            .advancedsettings {width: 100%%;}
+        }
+        @media only screen and (max-width: 340px) {
+            .btn-dark {width: 120px;}
+        }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='row uicontent' align='center'>
+            <div class='col'>
+                <!-- Header -->
+                <h2>&nbsp;<br />Local Temperature Forecast</h2>
+                <h4 class='location-status'>Location: <span></span></h4>
+                <h4 class='timezone-status'>Local time: <span></span></h4>
+                <p class='error-message'>&nbsp;<br /><i><span></span></i></p>
+                <!-- Controls and Settings -->
+                <div class='row'>
+                    <div class='col-2'>&nbsp;</div>
+                    <div class='col-8'>
+                        <p>&nbsp;</p>
+                        <div class='row'>
+                            <div class='col-6 power-button' align='center' style='font-family:Abel, sans-serif'>
+                                <button class='btn btn-dark' type='submit' id='power-action'>Turn LEDs off</button>
+                            </div>
+                            <div class='col-6 reboot-button' align='center' style='font-family:Abel, sans-serif'>
+                                <button class='btn btn-dark' type='submit' id='reboot-action'>Restart Device</button>
+                            </div>
+                        </div>
+                        <div class='row' align='center'>
+                            <div class='col'>
+                                <p class='subheader'>&nbsp;<br />LED Brightness</p>
+                                <input class='slider' type='range' name='brightness' id='brightness' value='5' min='1' max='10'>
+                                <table width='100%%'><tr>
+                                    <td width='20%%' align='left'><div class='biconlow'><span></span></div></td>
+                                    <td width='60%%' align='center'><div class='biconmid'><span></span></div></td>
+                                    <td width='20%%' align='right'><div class='biconhigh'><span></span></div></td>
+                                </tr></table>
+                                <p class='brightness-status'>Brightness: <span></span></p>
+                            </div>
+                        </div>
+                        <div class='row' align='center' style='font-family:Abel, sans-serif'>
+                            <div class='col'>
+                                <p class='subheader'>&nbsp;<br />LED Orientation</p>
+                                <div class='graphic'><span></span><br />&nbsp;</div>
+                                <button class='btn left-action' type='submit' id='left-action' style='height:64px;width:64px'>Left</button>&nbsp;
+                                <button class='btn right-action' type='submit' id='right-action' style='height:64px;width:64px'>Right</button>
+                                <p class='orient-status'>&nbsp;<br /><i><span></span></i></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-2'>&nbsp;</div>
+                </div>
+                <!-- Advanced Settings Row-->
+                <div class='row'>
+                    <div class='col-2'>&nbsp;</div>
+                    <div class='col-8'>
+                        <p>&nbsp;</p>
+                        <div class='advancedsettings'>
+                            <p class='showhide' style='color:white'>Show Advanced Settings</p>
+                            <div class='advanced'>
+                                <div class='debug-checkbox' style='color:white;font-family:Abel, sans-serif' align='center'>
+                                    <input type='checkbox' name='debug' id='debug' value='debug'> Debug Mode
+                                </div>
+                                <p>&nbsp;</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-2'>&nbsp;</div>
+                </div>
+                <!-- Colophon -->
+                <p class='colophon'><small>Thermal Forecast World &copy; Tony Smith, 2016-20</small><br />
+                <a href='https://github.com/smittytone/ThermalForecastWorld'>
+                <img src='https://smittytone.github.io/images/rassilon.png' width='32' height='32' /></a></p>
+            </div>
+        </div>
+    </div>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script>
+    $('.advanced').hide();
+
+    var agenturl = '%s';
+    var power = true;
+
+    // Set images
+    $('.biconlow span').html('<img src=""' + agenturl + '/images/low.png' + '"" width=""20"" />');
+    $('.biconmid span').html('<img src=""' + agenturl + '/images/mid.png' + '"" width=""20"" />');
+    $('.biconhigh span').html('<img src=""' + agenturl + '/images/high.png' + '"" width=""20"" />');
+    $('.graphic span').html('<img src=""' + agenturl + '/images/left.png' + '"" width=""310"" />');
+
+    // Get initial readings
+    getState(updateReadout);
+
+    // Set UI click actions
+    $('#reboot-action').click(doReboot);
+    $('#power-action').click(setPower);
+    $('#left-action').click(setLeftOrient);
+    $('#right-action').click(setRightOrient);
+    $('#debug').click(setDebug);
+
+    var slider = document.getElementById('brightness');
+    slider.addEventListener('mouseup', updateSlider);
+    slider.addEventListener('touchend', updateSlider);  // Required for Mobile Safari
+
+    $('.brightness-status span').text(slider.value);
+    $('.location-status span').text('Seeking...');
+    $('.timezone-status span').text('Seeking...');
+    $('.orient-status span').text('Seeking...');
+
+    $('.showhide').click(function(){
+        $('.advanced').toggle();
+        var isVis = $('.advanced').is(':visible');
+        $('.showhide').text(isVis ? 'Hide Advanced Settings' : 'Show Advanced Settings');
+    });
+
+    function updateSlider() {
+        $('.brightness-status span').text(slider.value);
+        setbrightness();
+    }
+
+    function updateReadout(data) {
+        if (data.error) {
+            // Display the error in the error space
+            $('.error-message span').text(data.error);
+        } else {
+            // Populate the UI with the current settings
+            $('.error-message span').text('Your Forecaster is ' + (data.connected ? 'online' : 'offline'));
+            $('#brightness').val(data.brightness);
+            $('.brightness-status span').text(data.brightness);
+            $('.location-status span').text(data.place);
+
+            let a = data.timezone.split(' ');
+            if (a[1]) {
+                $('.timezone-status span').text(a[1] + ' on ' + a[0]);
+            } else {
+                $('.timezone-status span').text('Unknown');
+            }
+
+            if (data.orient) { setLedLeft(); } else { setLedRight(); }
+            $('#power-action').text('Turn LEDs ' + (data.power ? 'off' : 'on'));
+            power = data.power;
+            document.getElementById('debug').checked = data.debug;
+        }
+
+        // Display the settings again in 4 minutes (240s)
+        setTimeout(function() {
+            getState(updateReadout);
+        }, 240000);
+    }
+
+    function getState(callback) {
+        // Request the current data
+        $.ajax({
+            url: agenturl + '/settings',
+            type: 'GET',
+            cache: false,
+            success: function(response) {
+                response = JSON.parse(response);
+                if (callback) {
+                    callback(response);
+                }
+            }
+        });
+    }
+
+    function setbrightness() {
+        // Set the device screen brightness
+        doPost('/settings',
+               { 'bright' : $('#brightness').val() },
+               null);
+    }
+
+    function doReboot() {
+        // Trigger a device restart
+        doPost('/actions',
+               { 'action' : 'reboot' },
+               null);
+    }
+
+    function setDebug() {
+        // Tell the device to enter or leave debug mode
+        doPost('/actions',
+               { 'action' : 'debug', 'debug' : document.getElementById('debug').checked },
+               null);
+    }
+
+    function setPower() {
+        // Tell the device to enter or leave debug mode
+        power = !power
+        doPost('/actions',
+               { 'action' : 'power', 'power' : power },
+               function(response) { $('#power-action').text('Turn LEDs ' + (power ? 'Off' : 'On')); });
+    }
+
+    function setLeftOrient() {
+        // Tell the device it's LED is on the left
+        //setLedLeft()
+        doPost('/actions',
+               { 'action' : 'orient', 'ledleft' : true },
+               function(response) { getState(updateReadout); });
+    }
+
+    function setRightOrient() {
+        // Tell the device it's LED is on the right
+        //setLedRight()
+        doPost('/actions',
+               { 'action' : 'orient', 'ledleft' : false },
+               function(response) { getState(updateReadout); });
+    }
+
+    function doPost(path, data, successFunc) {
+        $.ajax({
+            url: agenturl + path,
+            type: 'POST',
+            data: JSON.stringify(data),
+            cache: false,
+            success: successFunc
+        });
+    }
+
+    function setLedLeft() {
+        // Set the readout text
+        $('.orient-status span').text('LEDs on the left, imp001 on the right');
+        // Set the graphic
+        $('.graphic span').html('<img src=""' + agenturl + '/images/left.png' + '"" width=""310"" />');
+        // Make left button green, right button dark
+        document.getElementById('left-action').classList.remove('btn-dark');
+        document.getElementById('left-action').classList.add('btn-success');
+        document.getElementById('right-action').classList.remove('btn-success');
+        document.getElementById('right-action').classList.add('btn-dark');
+    }
+
+    function setLedRight() {
+        // Set the readout text
+        $('.orient-status span').text('LEDs on the right, imp001 on the left');
+        // Set the graphic
+        $('.graphic span').html('<img src=""' + agenturl + '/images/right.png' + '"" width=""310"" />');
+        // Make left button dark, right button green
+        document.getElementById('left-action').classList.remove('btn-success');
+        document.getElementById('left-action').classList.add('btn-dark');
+        document.getElementById('right-action').classList.remove('btn-dark');
+        document.getElementById('right-action').classList.add('btn-success');
+    }
+    </script>
+</body>
+</html>
