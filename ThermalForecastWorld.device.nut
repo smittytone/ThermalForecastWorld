@@ -117,25 +117,19 @@ function setPixel(index, value) {
 
     // Scale red proportionally to temp, from mid to max
     col[0] = (MAX_BRIGHT.tofloat() / mid) * (temp - mid);
-    if (col[0] < 0) col[0] = 0;
-    if (col[0] > MAX_BRIGHT) col[0] = MAX_BRIGHT;
 
     // Scale green proportionally to temp from min + 1 to mid, inversely from mid to max -1
     col[1] = MAX_BRIGHT - ((MAX_BRIGHT.tofloat() / (mid - 1)) * (math.abs(temp - mid - 1)));
-    if (col[1] < 0) col[1] = 0;
-    if (col[1] > MAX_BRIGHT) col[1] = MAX_BRIGHT;
 
     // Scale blue inversely to temp, from min to mid
     col[2] = MAX_BRIGHT - ((MAX_BRIGHT.tofloat() / mid) * temp);
-    if (col[2] < 0) col[2] = 0;
-    if (col[2] > MAX_BRIGHT) col[2] = MAX_BRIGHT;
 
     // Apply brightness setting to each colour component
-    col[0] = (col[0] * brightness).tointeger();
-    col[1] = (col[1] * brightness).tointeger();
-    col[2] = (col[2] * brightness).tointeger();
-
-    // server.log(format("Temp: %0.2f -> [%d,%d,%d]", temp - 10, col[0], col[1], col[2]));
+    for (local i = 0 ; i < 3 ; i++) {
+        if (col[i] < 0) col[i] = 0;
+        if (col[i] > MAX_BRIGHT) col[i] = MAX_BRIGHT;
+        col[i] = (col[i] * brightness).tointeger();
+    }
 
     // Set current pixel’s color and pause
     pixels.set(index, col).draw();

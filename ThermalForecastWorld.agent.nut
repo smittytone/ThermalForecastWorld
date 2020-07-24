@@ -134,44 +134,52 @@ function initialise() {
     device.send("set.bright", settings.brightness);
     device.send("set.orientation", settings.ledleft);
 
-    // Get the device's location
-    locator.locate(true, function() {
-        location = locator.getLocation();
-        local tz = locator.getTimezone();
+    // Get the device's location if we need to
+    if ("loc" in settings && settings.loc.tim == -1) {
+        locator.locate(true, function() {
+            location = locator.getLocation();
+            local tz = locator.getTimezone();
 
-        if (!("error" in location)) {
-            // Device's location obtained successfully, so get the location name
-            location.place <- ("placeData" in location ? parsePlaceData(location.placeData) : "TBD");
+            if (!("error" in location)) {
+                // Device's location obtained successfully, so get the location name
+                location.place <- ("placeData" in location ? parsePlaceData(location.placeData) : "TBD");
 
-            if (settings.debug) {
-                server.log("Co-ordinates: " + location.longitude + ", " + location.latitude);
-                server.log("Location    : " + location.place);
+                if (settings.debug) {
+                    server.log("Co-ordinates: " + location.longitude + ", " + location.latitude);
+                    server.log("Location    : " + location.place);
+                }
+
+                // Retain the data
+                settings.loc.lon = location.longitude;
+                settings.loc.lat = location.latitude;
+                settings.loc.plc = location.place;
+                settings.loc.tim = time();
+
+                // Start the forecasting loop
+                getForecast();
+            } else {
+                // Device's location not obtained, so check again in 30s
+                if (settings.debug) server.error(location.error);
+                imp.wakeup(30, initialise);
+                return;
             }
 
-            // Start the forecasting loop
-            getForecast();
-        } else {
-            // Device's location not obtained, so check again in 30s
-            if (settings.debug) server.error(location.error);
-            imp.wakeup(30, initialise);
-            return;
-        }
+            if (!("error" in tz)) {
+                if (settings.debug) {
+                    server.log("Local time  : " + tz.dateStr);
+                    server.log("Timezone    : " + tz.gmtOffsetStr);
+                }
 
-        if (!("error" in tz)) {
-            if (settings.debug) {
-                server.log("Local time  : " + tz.dateStr);
-                server.log("Timezone    : " + tz.gmtOffsetStr);
+                timezone = {};
+                timezone.date <- tz.dateStr;
+                timezone.offset <- ((tz.gmtOffset != 0) ? tz.gmtOffsetStr : "");
+            } else {
+                // Device's timezone not obtained, so check again in 30s
+                if (settings.debug) server.error(tz.error);
+                imp.wakeup(30, initialise);
             }
-
-            timezone = {};
-            timezone.date <- tz.dateStr;
-            timezone.offset <- ((tz.gmtOffset != 0) ? tz.gmtOffsetStr : "");
-        } else {
-            // Device's timezone not obtained, so check again in 30s
-            if (settings.debug) server.error(tz.error);
-            imp.wakeup(30, initialise);
-        }
-    });
+        });
+    }
 }
 
 function setDefaults() {
@@ -182,6 +190,10 @@ function setDefaults() {
     settings.debug <- false;
     settings.power <- true;
     settings.ledleft <- true;   // true = LED is on the left, imp on the right
+    settings.loc <- { "tim": -1,
+                      "plc": "TBD",
+                      "lon": 0,
+                      "lat": 0};
     server.save(settings);
 }
 
@@ -231,6 +243,14 @@ if (loadedSettings.len() == 0) {
     if (!("ledleft" in settings)) {
         // There was no 'ledleft' key in the settings table, so create one...
         settings.ledleft <- true;
+        doSave = true;
+    }
+
+    if (!("loc" in settings)) {
+        settings.loc <- { "tim": -1,
+                          "plc": "TBD",
+                          "lon": 0,
+                          "lat": 0};
         doSave = true;
     }
 
